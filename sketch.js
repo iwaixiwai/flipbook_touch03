@@ -1,5 +1,6 @@
 let gif;
 let png;
+let title;
 let frameSlider;
 let sound; // サウンドオブジェクトを格納する変数
 let index = 0;
@@ -11,10 +12,17 @@ let snd = [];
 let bar_y;
 let flip_flag = 0;
 let shift_x, shift_y;
+let touch_onoff = 0;
+let count = 0;
+let end_count = 0;
+let title_fade = 255;
+let title_onoff = 0;
 
 // Load the image.
 function preload() {
-  png = loadImage("flipbook_shadow.png");
+  
+  title = loadImage("flipbook_title02b.png");
+  png = loadImage("flipbook_shadow01.png");
   gif = loadImage("階段を降りる人アニメ正方形.gif");
   snd[0] = loadSound('flipbook01_short.wav');
   snd[1] = loadSound('flipbook02_short.wav');
@@ -50,11 +58,15 @@ function setup()
   // Get the index of the last frame.
   maxFrame = gif.numFrames() - 1;
 
+  title_onoff = 2;
+  count = 12; 
+
 }
 
 function draw() 
 {
   background(255);
+  tint(255, 255);  // 透明度
 
   translate(shift_x,shift_y);
 
@@ -91,6 +103,17 @@ function draw()
     snd[index%3].stop();
     snd[index%3].play();
     flip_flag = 1;
+    
+    if(title_onoff == 0)
+    {
+      title_onoff = 1;
+      count = 0;
+    }
+    if(count > 12)
+    {
+      title_onoff = 2;
+      count = 500;
+    }
   }
   
   // Set the GIF's frame.
@@ -122,6 +145,34 @@ function draw()
   text(index+1, ww/2, bar_y+ww*0.075);
 
   index_old = index;
+  
+  if(count >= 0 && count < 12)
+  {
+    title_fade = 255 - count * 25;
+    if(title_fade < 0) title_fade = 0;
+    tint(255, title_fade);  // 透明度
+    image(title, 0, 0, ww,ww);
+  }
+  
+  if(title_onoff == 1)
+  {
+    count++;
+    if(count > 12)
+    {
+      title_onoff = 2;
+      count = 500;
+    }
+  }
+  
+  if(!touch_onoff && title_onoff == 2)
+  {
+    count--;
+    if(count < 0)
+    {
+      count = 0;
+      title_onoff = 0;
+    }
+  }
 }
 
 // On mouse click
@@ -130,12 +181,31 @@ function mousePressed()
     snd[0].play();
           uX = mouseX;
         uY = mouseY;
+  touch_onoff = true;
+  if(title_onoff == 0)
+  {
+    title_onoff = 1;
+    count = 0;
+  }
+}
 
-}
-/*
-function touchMoved() 
+
+function mouseReleased() 
 {
-  uX = touches[0].x;
-  uY = touches[0].y;
+  touch_onoff = false;
 }
-*/
+
+function touchStarted() 
+{
+  touch_onoff = true;
+  if(title_onoff == 0)
+  {
+    title_onoff = 1;
+    count = 0;
+  }
+}
+
+function touchEnded() 
+{
+  touch_onoff = false;
+}
