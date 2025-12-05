@@ -112,7 +112,7 @@ function draw()
     if(count > 12)
     {
       title_onoff = 2;
-      count = 500;
+      count = 200;
     }
   }
   
@@ -160,7 +160,7 @@ function draw()
     if(count > 12)
     {
       title_onoff = 2;
-      count = 500;
+      count = 200;
     }
   }
   
